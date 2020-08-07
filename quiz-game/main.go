@@ -26,16 +26,15 @@ func main() {
 	}
 
 	timer := time.NewTimer(time.Second * time.Duration(*limit))
-	problems := make(chan problem)
 	numCorrect := int32(0)
-	go readProblems(records, problems)
+	problems := readProblems(records)
 Game:
-	for i := 0; i < len(records); i++ {
+	for i, prob := range problems {
 		select {
 		case <-timer.C:
 			fmt.Println("Time's up!")
 			break Game
-		case prob := <-problems:
+		default:
 			q := prob.question
 			fmt.Printf("Question %d:\n", i+1)
 			fmt.Printf("%s: ", q)
@@ -58,12 +57,13 @@ type problem struct {
 	answer   string
 }
 
-func readProblems(records [][]string, out chan problem) {
-	defer close(out)
-	for _, record := range records {
-		out <- problem{
+func readProblems(records [][]string) []problem {
+	out := make([]problem, len(records))
+	for i, record := range records {
+		out[i] = problem{
 			question: record[0],
 			answer:   record[1],
 		}
 	}
+	return out
 }
