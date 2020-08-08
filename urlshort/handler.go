@@ -1,4 +1,4 @@
-package urlshort
+package main
 
 import (
 	"net/http"
