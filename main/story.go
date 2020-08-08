@@ -48,24 +48,36 @@ func (s *StoryTeller) read(key string) string {
 		fmt.Println("The end!")
 		return ""
 	}
+	for {
+		paths := printOptions(arc)
+		choice := awaitChoice()
+		if val, ok := paths[choice]; ok {
+			return val
+		}
+		if choice == "q" || choice == "quit" {
+			return ""
+		}
+		fmt.Printf(`"%s" is not a valid option, please choose a valid option. 
+To quit, type "q" or "quit".
+`, choice)
+	}
+}
 
-	paths := printOptions(arc)
-
-	var chosenOption string
-	_, err := fmt.Scanf("%s\n", &chosenOption)
+func awaitChoice() string {
+	var choice string
+	_, err := fmt.Scanf("%s\n", &choice)
 	if err != nil {
-		fmt.Errorf("Error reading option")
+		fmt.Errorf("Error reading option: &s", choice)
 		return ""
 	}
-	return paths[chosenOption]
+	return choice
 }
 
 func printStory(story []string) {
 	for _, line := range story {
-		fmt.Println(line)
-		fmt.Println("(to continue, press Enter)")
+		fmt.Printf("%s\n(press Enter to continue)", line)
 		var wait string
-		_, _ = fmt.Scanln(&wait)
+		_, _ = fmt.Scanf("\n", &wait)
 	}
 }
 func printOptions(arc StoryArc) map[string]string {
